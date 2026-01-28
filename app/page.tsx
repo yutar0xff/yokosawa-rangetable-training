@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Brain, Grid3X3, Swords } from "lucide-react";
+import { Brain, Grid3X3, Swords, Github } from "lucide-react";
 import { RangeGrid } from "@/app/components/RangeGrid";
 import { RangeLegend } from "@/app/components/common/RangeLegend";
 import { loadRanges } from "@/app/utils/loadRanges";
@@ -53,19 +53,41 @@ export default async function Home() {
           </Link>
 
           {/* Scenario Mode */}
-          <Link href="/training/scenario" className="block">
-            <Card className="hover:border-black transition-colors cursor-pointer">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xl">シナリオモード</CardTitle>
-                <Swords className="w-6 h-6 text-red-500" />
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-500">
-                  状況（人数）に応じて、参加するか降りるかを実践的に判断。
-                </p>
-              </CardContent>
-            </Card>
-          </Link>
+          {process.env.NODE_ENV === "production" ? (
+            <div className="block">
+              <Card className="opacity-50 cursor-not-allowed relative">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-xl">シナリオモード</CardTitle>
+                  <Swords className="w-6 h-6 text-gray-400" />
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-400">
+                    状況（人数）に応じて、参加するか降りるかを実践的に判断。
+                  </p>
+                  <Badge
+                    variant="outline"
+                    className="mt-2 bg-gray-200 text-gray-600 border-gray-300"
+                  >
+                    Coming Soon
+                  </Badge>
+                </CardContent>
+              </Card>
+            </div>
+          ) : (
+            <Link href="/training/scenario" className="block">
+              <Card className="hover:border-black transition-colors cursor-pointer">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-xl">シナリオモード</CardTitle>
+                  <Swords className="w-6 h-6 text-red-500" />
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-500">
+                    状況（人数）に応じて、参加するか降りるかを実践的に判断。
+                  </p>
+                </CardContent>
+              </Card>
+            </Link>
+          )}
         </div>
 
         {/* 右側: レンジテーブルと色・星の対応 */}
@@ -91,6 +113,44 @@ export default async function Home() {
             </CardHeader>
             <CardContent>
               <RangeLegend variant="list" />
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Footer: GitHub & Reference Video */}
+      <div className="w-full space-y-6 mt-12 pb-8">
+        {/* GitHub Link */}
+        <div className="flex justify-center">
+          <Link
+            href="https://github.com/yutar0xff/yokosawa-rangetable-training"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+          >
+            <Github className="w-6 h-6" />
+            <span className="text-sm font-medium">GitHubリポジトリ</span>
+          </Link>
+        </div>
+
+        {/* Reference Video */}
+        <div className="w-full max-w-4xl mx-auto">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg text-center">参考動画</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="aspect-video w-full">
+                <iframe
+                  width="100%"
+                  height="100%"
+                  src="https://www.youtube.com/embed/NDouTGvor-k"
+                  title="参考動画"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  className="rounded-lg"
+                />
+              </div>
             </CardContent>
           </Card>
         </div>

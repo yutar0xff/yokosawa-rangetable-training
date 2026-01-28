@@ -17,8 +17,8 @@ export function HandDisplay({
   showCorrectEffect,
 }: HandDisplayProps) {
   return (
-    <Card className="flex-1 flex flex-col justify-center items-center py-8 min-h-[300px] relative">
-      <div className="flex gap-4 sm:gap-6 mb-8 px-4 sm:px-6">
+    <Card className="flex-1 flex flex-col justify-center items-center py-4 sm:py-6 min-h-[200px] relative">
+      <div className="flex gap-4 sm:gap-6 mb-4 sm:mb-6 px-4 sm:px-6">
         <PokerCard
           card={cards[0]}
           width={CARD_SIZES.LARGE.width}

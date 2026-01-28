@@ -11,7 +11,12 @@ export function RangeLegend({ variant = "list", className }: RangeLegendProps) {
 
   if (variant === "grid") {
     return (
-      <div className={cn("grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-2", className)}>
+      <div
+        className={cn(
+          "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-2",
+          className,
+        )}
+      >
         {entries.map(([starStr, category]) => (
           <div
             key={category}
@@ -21,9 +26,7 @@ export function RangeLegend({ variant = "list", className }: RangeLegendProps) {
             )}
           >
             <span className="font-bold">☆{starStr}</span>
-            <span className="text-[10px] hidden sm:inline">
-              {category}
-            </span>
+            <span className="text-[10px] hidden sm:inline">{category}</span>
           </div>
         ))}
       </div>
@@ -32,7 +35,12 @@ export function RangeLegend({ variant = "list", className }: RangeLegendProps) {
 
   if (variant === "buttons") {
     return (
-      <div className={cn("grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2", className)}>
+      <div
+        className={cn(
+          "grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2",
+          className,
+        )}
+      >
         {entries.map(([starStr, category]) => {
           const star = parseInt(starStr);
           return (
