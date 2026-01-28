@@ -1,107 +1,132 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PokerCard } from "@/app/components/PokerCard";
-import { RangeTable, RangeCategory } from "@/app/data/types";
+import { RangeTable } from "@/app/data/types";
 import { SCENARIO_RULES, checkAction, GameType } from "@/app/data/rules";
-import { Check, X, Play, XCircle, Home } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { parseHandToCards } from "@/app/utils/handParser";
+import { HomeButton } from "@/app/components/common/HomeButton";
+import { CARD_SIZES } from "@/app/data/constants";
+import { pickRandom } from "@/app/utils/randomUtils";
+import { useStreak } from "@/app/hooks/useStreak";
+import { useAutoAdvance } from "@/app/hooks/useAutoAdvance";
+import { ScenarioFeedback } from "@/app/components/training/ScenarioFeedback";
+import { GameTypeSelector } from "@/app/components/training/GameTypeSelector";
+import { ActionButtons } from "@/app/components/training/ActionButtons";
 
 interface ScenarioSessionProps {
   ranges: RangeTable;
 }
 
+interface ScenarioQuestion {
+  rule: {
+    text: string;
+    minStars: number;
+    gameType: GameType;
+  };
+  hand: string;
+}
+
 export default function ScenarioSession({ ranges }: ScenarioSessionProps) {
-  const router = useRouter();
   const [gameType, setGameType] = useState<GameType>("ring");
-  const [scenarioIndex, setScenarioIndex] = useState(0);
-  const [currentHand, setCurrentHand] = useState<string>("");
   const [feedback, setFeedback] = useState<"correct" | "incorrect" | null>(
     null,
   );
-  const [streak, setStreak] = useState(0);
+  const { streak, updateStreak } = useStreak();
 
-  // Helper to generate new question
-  const generateQuestion = () => {
-    // Pick random scenario rule for current game type
+  // 新しい問題を生成
+  const generateQuestion = useCallback((): ScenarioQuestion => {
+    // 現在のゲームタイプからランダムなルールを選択
     const rules = SCENARIO_RULES.filter((r) => r.gameType === gameType);
-    const rule = rules[Math.floor(Math.random() * rules.length)];
+    if (rules.length === 0) {
+      throw new Error(`No rules found for gameType: ${gameType}`);
+    }
+    const rule = pickRandom(rules);
+    if (!rule) {
+      throw new Error("Failed to pick random rule");
+    }
 
-    // Pick random hand
+    // ランダムなハンドを選択
     const hands = Object.keys(ranges);
-    const hand = hands[Math.floor(Math.random() * hands.length)];
+    if (hands.length === 0) {
+      throw new Error("No hands available in ranges");
+    }
+    const hand = pickRandom(hands);
+    if (!hand) {
+      throw new Error("Failed to pick random hand");
+    }
 
     return { rule, hand };
-  };
+  }, [gameType, ranges]);
 
-  const [question, setQuestion] = useState(generateQuestion());
+  const [question, setQuestion] = useState<ScenarioQuestion>(() => {
+    try {
+      return generateQuestion();
+    } catch (error) {
+      // 初期化時のエラーを防ぐため、デフォルト値を返す
+      console.error("Failed to generate initial question:", error);
+      const defaultRule = SCENARIO_RULES[0];
+      if (!defaultRule) {
+        throw new Error("No default rule available");
+      }
+      const defaultHand = Object.keys(ranges)[0] || "AA";
+      return { rule: defaultRule, hand: defaultHand };
+    }
+  });
+
+  const nextQuestion = useCallback(() => {
+    setFeedback(null);
+    try {
+      setQuestion(generateQuestion());
+    } catch (error) {
+      console.error("Failed to generate question:", error);
+    }
+  }, [generateQuestion]);
 
   // Regenerate when gameType changes
   useEffect(() => {
     nextQuestion();
-  }, [gameType]);
+  }, [nextQuestion]);
 
-  const nextQuestion = () => {
-    setFeedback(null);
-    setQuestion(generateQuestion());
-  };
+  const handleAction = useCallback(
+    (action: "play" | "fold") => {
+      if (feedback) return;
 
-  const handleAction = (action: "play" | "fold") => {
-    if (feedback) return;
+      const handCategory = ranges[question.hand];
+      if (!handCategory) {
+        console.error(`No category found for hand: ${question.hand}`);
+        return;
+      }
 
-    const handCategory = ranges[question.hand];
-    const correctAnswer = checkAction(handCategory, question.rule.minStars);
+      if (!question.rule) {
+        console.error("Question rule is missing");
+        return;
+      }
 
-    const isCorrect = action === correctAnswer;
-    setFeedback(isCorrect ? "correct" : "incorrect");
+      const correctAnswer = checkAction(handCategory, question.rule.minStars);
 
-    if (isCorrect) setStreak((s) => s + 1);
-    else setStreak(0);
+      const isCorrect = action === correctAnswer;
+      setFeedback(isCorrect ? "correct" : "incorrect");
+      updateStreak(isCorrect);
+    },
+    [feedback, ranges, question, updateStreak],
+  );
 
-    // Auto advance if correct? Or manual?
-    // User plan: "正解/不正解のフィードバックを表示" -> manual advance implies better learning.
-    // Let's do auto for correct after short delay, manual for incorrect.
-    if (isCorrect) {
-      setTimeout(nextQuestion, 800);
-    }
-  };
+  // 正解時に自動で次へ進む
+  useAutoAdvance(feedback === "correct", nextQuestion, feedback !== null);
 
-  const cards = parseHandToCards(question.hand);
+  const cards = useMemo(() => parseHandToCards(question.hand), [question.hand]);
 
   return (
     <div className="container max-w-7xl mx-auto p-4 space-y-6 flex flex-col min-h-screen">
       {/* Settings / Status */}
       <div className="flex justify-between items-center">
-        <div className="flex gap-2">
-          <Button
-            variant={gameType === "ring" ? "default" : "outline"}
-            onClick={() => setGameType("ring")}
-            size="sm"
-          >
-            リング
-          </Button>
-          <Button
-            variant={gameType === "tournament" ? "default" : "outline"}
-            onClick={() => setGameType("tournament")}
-            size="sm"
-          >
-            トーナメント
-          </Button>
-        </div>
+        <GameTypeSelector gameType={gameType} onGameTypeChange={setGameType} />
         <div className="flex items-center gap-2">
           <Badge variant="outline">Streak: {streak}</Badge>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => router.push("/")}
-            className="h-8 w-8 p-0"
-          >
-            <Home className="h-4 w-4" />
-          </Button>
+          <HomeButton />
         </div>
       </div>
 
@@ -109,33 +134,7 @@ export default function ScenarioSession({ ranges }: ScenarioSessionProps) {
       <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center">
         <Card className="flex-1 w-full lg:max-w-md flex flex-col justify-center items-center py-8 relative">
           {feedback && (
-            <div
-              className={cn(
-                "absolute inset-0 flex items-center justify-center bg-black/10 backdrop-blur-sm z-10 rounded-lg animate-in fade-in",
-              )}
-            >
-              <div
-                className={cn(
-                  "p-6 rounded-xl border-4 text-4xl font-bold flex flex-col items-center shadow-lg bg-white",
-                  feedback === "correct"
-                    ? "border-green-500 text-green-600"
-                    : "border-red-500 text-red-600",
-                )}
-              >
-                {feedback === "correct" ? (
-                  <Check className="w-16 h-16" />
-                ) : (
-                  <X className="w-16 h-16" />
-                )}
-                {feedback === "correct" ? "正解!" : "不正解..."}
-
-                {feedback === "incorrect" && (
-                  <div className="mt-4">
-                    <Button onClick={nextQuestion}>次へ</Button>
-                  </div>
-                )}
-              </div>
-            </div>
+            <ScenarioFeedback feedback={feedback} onNext={nextQuestion} />
           )}
 
           <div className="text-xl font-bold mb-8 text-center text-gray-700">
@@ -143,42 +142,23 @@ export default function ScenarioSession({ ranges }: ScenarioSessionProps) {
           </div>
 
           <div className="flex gap-6 mb-8">
-            <PokerCard card={cards[0]} width={180} height={252} />
-            <PokerCard card={cards[1]} width={180} height={252} />
+            <PokerCard
+              card={cards[0]}
+              width={CARD_SIZES.LARGE.width}
+              height={CARD_SIZES.LARGE.height}
+            />
+            <PokerCard
+              card={cards[1]}
+              width={CARD_SIZES.LARGE.width}
+              height={CARD_SIZES.LARGE.height}
+            />
           </div>
           <h2 className="text-4xl font-bold">{question.hand}</h2>
         </Card>
 
         {/* Actions */}
-        <div className="w-full lg:w-auto lg:min-w-[200px]">
-          <div className="grid grid-cols-2 lg:grid-cols-1 gap-4 h-24 lg:h-auto lg:space-y-4">
-            <Button
-              onClick={() => handleAction("fold")}
-              className="h-full lg:h-16 text-xl bg-gray-500 hover:bg-gray-600"
-            >
-              <XCircle className="mr-2 w-6 h-6" /> Fold
-            </Button>
-            <Button
-              onClick={() => handleAction("play")}
-              className="h-full lg:h-16 text-xl bg-red-600 hover:bg-red-700"
-            >
-              <Play className="mr-2 w-6 h-6" /> Play
-            </Button>
-          </div>
-        </div>
+        <ActionButtons onAction={handleAction} />
       </div>
     </div>
   );
-}
-
-// Reuse helper (should extract to utils)
-function parseHandToCards(hand: string): [string, string] {
-  const rank1 = hand[0];
-  const rank2 = hand[1];
-  const type = hand.length > 2 ? hand[2] : "";
-  let s1 = "s",
-    s2 = "h";
-  if (type === "s") s2 = "s";
-  else s2 = "h";
-  return [`${rank1}${s1}`, `${rank2}${s2}`];
 }

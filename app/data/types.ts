@@ -54,3 +54,11 @@ export interface HandStat {
 }
 
 export type RangeTable = Record<string, RangeCategory>;
+
+// フラッシュカードモード用の型定義
+export type GameState = "playing" | "feedback" | "finished";
+
+export interface Question {
+  hand: string;
+  correctRange: RangeCategory;
+}

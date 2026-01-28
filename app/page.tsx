@@ -1,30 +1,20 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Brain, Grid3X3, Swords } from "lucide-react";
-import path from "path";
-import { promises as fs } from "fs";
 import { RangeGrid } from "@/app/components/RangeGrid";
-import { RangeTable, STAR_TO_RANGE, RANGE_COLORS } from "@/app/data/types";
+import { RangeLegend } from "@/app/components/common/RangeLegend";
+import { loadRanges } from "@/app/utils/loadRanges";
 
 export default async function Home() {
-  // Load ranges data
-  const jsonPath = path.join(process.cwd(), "public", "data", "ranges.json");
-  const fileContents = await fs.readFile(jsonPath, "utf8");
-  const ranges: RangeTable = JSON.parse(fileContents);
+  const ranges = await loadRanges();
 
   return (
     <div className="container max-w-7xl mx-auto p-4 min-h-screen flex flex-col justify-center space-y-8">
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">
-          Yokosawa Range Training
+          Yokosawa RangeTable Training
         </h1>
         <p className="text-gray-500">プリフロップレンジを効率的に暗記しよう</p>
       </div>
@@ -100,26 +90,10 @@ export default async function Home() {
               <CardTitle className="text-lg">色と星の対応</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
-                {Object.entries(STAR_TO_RANGE)
-                  .reverse()
-                  .map(([starStr, category]) => (
-                    <div
-                      key={category}
-                      className={`flex items-center gap-3 p-2 rounded text-sm ${RANGE_COLORS[category]}`}
-                    >
-                      <span className="font-bold w-8">☆{starStr}</span>
-                      <span className="font-medium">{category}</span>
-                    </div>
-                  ))}
-              </div>
+              <RangeLegend variant="list" />
             </CardContent>
           </Card>
         </div>
-      </div>
-
-      <div className="text-center text-xs text-gray-400">
-        © Worlds Yokosawa RangeTable Training App
       </div>
     </div>
   );

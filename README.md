@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Yokosawa RangeTable Training
 
-## Getting Started
+ポーカーのプリフロップレンジを効率的に暗記するためのトレーニングアプリです。
 
-First, run the development server:
+## 機能
+
+### 1. 単語帳モード (Flashcard)
+ハンドを見て、その強さ（色・星）を即座に答えるトレーニングです。正解・不正解が記録され、苦手なハンドを重点的に復習できます。
+
+### 2. 塗り絵モード (Grid Fill)
+レンジ表を自分で塗って、記憶の正確さをチェックするモードです。色を選択してグリッドを塗りつぶし、正解と比較して採点できます。
+
+### 3. シナリオモード (Scenario)
+具体的な状況（リングゲームやトーナメント）とハンドが提示され、参加（Play）するか降りる（Fold）かを実践的に判断するモードです。
+
+## 技術スタック
+
+- Next.js (App Router)
+- React
+- TypeScript
+- Tailwind CSS
+- shadcn/ui
+
+## セットアップ手順
 
 ```bash
+# リポジトリのクローン
+git clone https://github.com/yutar0xff/yokosawa-rangetable-training.git
+
+# ディレクトリへの移動
+cd yokosawa-rangetable-training
+
+# 依存関係のインストール
+npm install
+# または
+pnpm install
+# または
+yarn install
+
+# 開発サーバーの起動
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+ブラウザで [http://localhost:3000](http://localhost:3000) を開いてください。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## リンク
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **GitHubリポジトリ**: [https://github.com/yutar0xff/yokosawa-rangetable-training](https://github.com/yutar0xff/yokosawa-rangetable-training)
+- **参考動画**: [https://youtu.be/NDouTGvor-k?si=YsoZK_5_55azBu05](https://youtu.be/NDouTGvor-k?si=YsoZK_5_55azBu05)
 
-## Learn More
+## ライセンス
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+このプロジェクトは非公式のトレーニングアプリです。世界のヨコサワチャンネルおよび関連する公式プロジェクトとは関係ありません。
