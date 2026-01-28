@@ -1,5 +1,5 @@
-import { Star } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Star } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface StarDisplayProps {
   count: number; // 0-8
@@ -15,7 +15,9 @@ export function StarDisplay({ count, max = 8, className }: StarDisplayProps) {
           key={i}
           className={cn(
             "w-4 h-4",
-            i < count ? "fill-yellow-400 text-yellow-400" : "fill-gray-200 text-gray-200"
+            i < count
+              ? "fill-yellow-400 text-yellow-400"
+              : "fill-gray-200 text-gray-200",
           )}
         />
       ))}

@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
-import { HandStat } from '../data/types';
+import { useState, useEffect, useCallback } from "react";
+import { HandStat } from "../data/types";
 
-const STORAGE_KEY = 'yokosawa-training-stats';
+const STORAGE_KEY = "yokosawa-training-stats";
 
 export function useRangeStats() {
   const [stats, setStats] = useState<Record<string, HandStat>>({});
@@ -15,7 +15,7 @@ export function useRangeStats() {
         setStats(JSON.parse(stored));
       }
     } catch (e) {
-      console.error('Failed to load stats', e);
+      console.error("Failed to load stats", e);
     } finally {
       setIsLoaded(true);
     }
@@ -29,13 +29,13 @@ export function useRangeStats() {
   }, [stats, isLoaded]);
 
   const recordResult = useCallback((hand: string, isCorrect: boolean) => {
-    setStats(prev => {
+    setStats((prev) => {
       const current = prev[hand] || {
         hand,
         correctCount: 0,
         totalCount: 0,
         lastReviewed: 0,
-        consecutiveCorrect: 0
+        consecutiveCorrect: 0,
       };
 
       const updated: HandStat = {
@@ -43,22 +43,25 @@ export function useRangeStats() {
         totalCount: current.totalCount + 1,
         correctCount: current.correctCount + (isCorrect ? 1 : 0),
         lastReviewed: Date.now(),
-        consecutiveCorrect: isCorrect ? current.consecutiveCorrect + 1 : 0
+        consecutiveCorrect: isCorrect ? current.consecutiveCorrect + 1 : 0,
       };
 
       return {
         ...prev,
-        [hand]: updated
+        [hand]: updated,
       };
     });
   }, []);
 
-  const getStat = useCallback((hand: string): HandStat | undefined => {
-    return stats[hand];
-  }, [stats]);
+  const getStat = useCallback(
+    (hand: string): HandStat | undefined => {
+      return stats[hand];
+    },
+    [stats],
+  );
 
   const resetStats = useCallback(() => {
-    if (confirm('学習データをすべてリセットしますか？')) {
+    if (confirm("学習データをすべてリセットしますか？")) {
       setStats({});
       localStorage.removeItem(STORAGE_KEY);
     }
@@ -69,6 +72,6 @@ export function useRangeStats() {
     isLoaded,
     recordResult,
     getStat,
-    resetStats
+    resetStats,
   };
 }
