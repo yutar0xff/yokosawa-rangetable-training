@@ -126,7 +126,7 @@ export default function GridSession({ correctRanges }: GridSessionProps) {
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
           塗り絵モード
         </h1>
-        <HomeButton className="h-9 w-9 p-0 hover:bg-gray-100" />
+        <HomeButton />
       </div>
 
       {/* Grid Area */}

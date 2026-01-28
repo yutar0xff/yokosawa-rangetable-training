@@ -121,13 +121,20 @@ export default function ScenarioSession({ ranges }: ScenarioSessionProps) {
 
   return (
     <div className="container max-w-7xl mx-auto p-4 space-y-6 flex flex-col min-h-screen">
-      {/* Settings / Status */}
-      <div className="flex justify-between items-center">
-        <GameTypeSelector gameType={gameType} onGameTypeChange={setGameType} />
+      {/* Header with Home button */}
+      <div className="flex justify-between items-center pb-2">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+          シナリオモード
+        </h1>
         <div className="flex items-center gap-2">
           <Badge variant="outline">Streak: {streak}</Badge>
           <HomeButton />
         </div>
+      </div>
+
+      {/* Settings / Status */}
+      <div className="flex justify-start">
+        <GameTypeSelector gameType={gameType} onGameTypeChange={setGameType} />
       </div>
 
       {/* Scenario Card */}

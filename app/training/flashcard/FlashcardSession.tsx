@@ -160,19 +160,23 @@ export default function FlashcardSession({ ranges }: FlashcardSessionProps) {
   }
 
   return (
-    <div className="container max-w-7xl mx-auto p-2 sm:p-4 space-y-4 flex flex-col min-h-screen">
-      <div className="space-y-2">
-        <div className="flex justify-between items-center text-sm text-gray-500">
-          <span>{isRetryMode ? "リトライ" : "単語帳モード"}</span>
-          <div className="flex items-center gap-2">
-            <span>
-              {currentIndex + 1} / {queue.length}
-            </span>
-            <HomeButton />
-          </div>
+    <div className="container max-w-7xl mx-auto p-2 sm:p-4 space-y-1 sm:space-y-2 flex flex-col min-h-screen">
+      {/* Header with Home button */}
+      <div className="flex justify-between items-center pb-0.5 sm:pb-1">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+          {isRetryMode ? "リトライ" : "単語帳モード"}
+        </h1>
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-gray-500">
+            {currentIndex + 1} / {queue.length}
+          </span>
+          <HomeButton />
         </div>
-        <Progress value={(currentIndex / queue.length) * 100} />
       </div>
+      <Progress
+        value={(currentIndex / queue.length) * 100}
+        className="mb-0.5 sm:mb-1"
+      />
 
       {gameState === "feedback" ? (
         <FlashcardFeedback
@@ -183,14 +187,20 @@ export default function FlashcardSession({ ranges }: FlashcardSessionProps) {
           onNext={nextQuestion}
         />
       ) : (
-        <>
-          <HandDisplay
-            hand={currentQuestion.hand}
-            cards={cards}
-            showCorrectEffect={showCorrectEffect}
-          />
-          <AnswerGrid onAnswer={handleAnswer} />
-        </>
+        <div className="flex flex-col flex-1 min-h-0">
+          {/* トランプ表示を中央に配置するラッパー */}
+          <div className="flex-1 flex items-center justify-center">
+            <HandDisplay
+              hand={currentQuestion.hand}
+              cards={cards}
+              showCorrectEffect={showCorrectEffect}
+            />
+          </div>
+          {/* ボタンを下に配置 */}
+          <div className="mt-auto">
+            <AnswerGrid onAnswer={handleAnswer} />
+          </div>
+        </div>
       )}
     </div>
   );
