@@ -51,7 +51,7 @@ export default function GridSession({ correctRanges }: GridSessionProps) {
 
       // 選択したツールと同じ色の場合はrangeIに戻す
       if (current === selectedTool) {
-        const next = { ...prev, [hand]: "rangeI" };
+        const next: RangeTable = { ...prev, [hand]: "rangeI" };
 
         // 間違いリストからも削除（修正された場合）
         if (isChecked && wrongHands.has(hand)) {
@@ -65,7 +65,7 @@ export default function GridSession({ correctRanges }: GridSessionProps) {
         return next;
       }
 
-      const next = { ...prev, [hand]: selectedTool };
+      const next: RangeTable = { ...prev, [hand]: selectedTool };
 
       // チェック済みで、修正した場合に間違いリストから削除
       if (isChecked && wrongHands.has(hand)) {
