@@ -26,6 +26,9 @@ export function FlashcardFeedback({
 }: FlashcardFeedbackProps) {
   return (
     <div className="flex flex-col flex-1 min-h-0 w-full gap-3">
+      <Button onClick={onNext} className="w-full shrink-0" size="default">
+        次へ
+      </Button>
       <div className="flex flex-col lg:flex-row gap-3 items-start lg:items-stretch flex-1 min-h-0 lg:overflow-hidden">
         {/* 左側: カードと選択・正解情報 */}
         <Card className="flex-1 w-full lg:max-w-xs lg:min-h-0 flex flex-col">
