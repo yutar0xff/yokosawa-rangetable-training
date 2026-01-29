@@ -35,7 +35,10 @@ export default function GridSession({ correctRanges }: GridSessionProps) {
   const [accuracy, setAccuracy] = useState(0);
 
   const handleCellClick = useCallback(
-    (hand: string) => {
+    (handOrHands: string | string[], options?: { isDrag?: boolean }) => {
+      const hands = Array.isArray(handOrHands) ? handOrHands : [handOrHands];
+      const isDrag = options?.isDrag ?? false;
+
       // 塗りを変更したら正答率の表示を消す
       if (showAccuracy) {
         setShowAccuracy(false);
@@ -43,37 +46,36 @@ export default function GridSession({ correctRanges }: GridSessionProps) {
 
       // チェック後も編集可能（間違いを修正できる）
       setUserRanges((prev) => {
-        const current = prev[hand];
+        let next: RangeTable = { ...prev };
+        const handsToRemoveFromWrong = new Set<string>();
 
-        // 選択したツールと同じ色の場合はrangeIに戻す
-        if (current === selectedTool) {
-          const next: RangeTable = { ...prev, [hand]: "rangeI" };
+        for (const hand of hands) {
+          const current = prev[hand];
 
-          // 間違いリストからも削除（修正された場合）
-          if (isChecked && wrongHands.has(hand)) {
-            setWrongHands((prevWrong) => {
-              const newWrong = new Set(prevWrong);
-              newWrong.delete(hand);
-              return newWrong;
-            });
+          // 単一クリック時のみ：選択したツールと同じ色なら rangeI に戻す。ドラッグ時は常に選択色で塗る
+          if (!isDrag && current === selectedTool) {
+            next = { ...next, [hand]: "rangeI" };
+            if (isChecked && wrongHands.has(hand)) {
+              handsToRemoveFromWrong.add(hand);
+            }
+          } else {
+            next = { ...next, [hand]: selectedTool };
+            if (isChecked && wrongHands.has(hand)) {
+              const userVal: RangeCategory = selectedTool;
+              const correctVal: RangeCategory = correctRanges[hand] || "rangeI";
+              if (userVal === correctVal) {
+                handsToRemoveFromWrong.add(hand);
+              }
+            }
           }
-
-          return next;
         }
 
-        const next: RangeTable = { ...prev, [hand]: selectedTool };
-
-        // チェック済みで、修正した場合に間違いリストから削除
-        if (isChecked && wrongHands.has(hand)) {
-          const userVal: RangeCategory = selectedTool;
-          const correctVal: RangeCategory = correctRanges[hand] || "rangeI";
-          if (userVal === correctVal) {
-            setWrongHands((prevWrong) => {
-              const newWrong = new Set(prevWrong);
-              newWrong.delete(hand);
-              return newWrong;
-            });
-          }
+        if (handsToRemoveFromWrong.size > 0) {
+          setWrongHands((prevWrong) => {
+            const newWrong = new Set(prevWrong);
+            handsToRemoveFromWrong.forEach((h) => newWrong.delete(h));
+            return newWrong;
+          });
         }
 
         return next;
