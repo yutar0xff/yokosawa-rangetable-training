@@ -1,26 +1,85 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Grid3X3, Swords, Github } from "lucide-react";
+import { Grid3X3, Swords, Github, Twitter } from "lucide-react";
 import { RangeGrid } from "@/app/components/RangeGrid";
 import { RangeLegend } from "@/app/components/common/RangeLegend";
 import { loadRanges } from "@/app/utils/loadRanges";
 import { FlashcardCardWithModal } from "@/app/components/flashcard/FlashcardCardWithModal";
+
+const GITHUB_URL = "https://github.com/yutar0xff/yokosawa-rangetable-training";
+const X_URL = "https://x.com/yutar0xff";
+
+function SocialIcons({ className }: { className?: string }) {
+  return (
+    <div className={`flex items-center gap-2 ${className ?? ""}`}>
+      <Link
+        href={GITHUB_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-gray-600 hover:text-gray-900 transition-colors"
+        aria-label="GitHubリポジトリ"
+      >
+        <Github className="w-6 h-6" />
+      </Link>
+      <Link
+        href={X_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-gray-600 hover:text-gray-900 transition-colors"
+        aria-label="作者のX"
+      >
+        <Twitter className="w-6 h-6" />
+      </Link>
+    </div>
+  );
+}
+
+function ReferenceVideoCard() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg text-center">参考動画</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="aspect-video w-full">
+          <iframe
+            width="100%"
+            height="100%"
+            src="https://www.youtube.com/embed/NDouTGvor-k"
+            title="参考動画"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            className="rounded-lg"
+          />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 export default async function Home() {
   const ranges = await loadRanges();
 
   return (
     <div className="container max-w-7xl mx-auto p-4 min-h-screen flex flex-col justify-center space-y-8">
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">
-          Yokosawa RangeTable Training
-        </h1>
-        <p className="text-gray-500">プリフロップレンジを効率的に暗記しよう</p>
+      {/* ヘッダー: タイトル＋横長時は右上に GitHub/X */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div className="text-center lg:text-left space-y-2">
+          <h1 className="text-3xl font-bold tracking-tight">
+            Yokosawa RangeTable Training
+          </h1>
+          <p className="text-gray-500">
+            プリフロップレンジを効率的に暗記しよう
+          </p>
+        </div>
+        <div className="hidden lg:flex">
+          <SocialIcons />
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* 左側: モード選択 */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-6">
+        {/* 左側: モード選択（横長時は参考動画も） */}
         <div className="space-y-4">
           {/* Flashcard Mode */}
           <FlashcardCardWithModal />
@@ -76,6 +135,11 @@ export default async function Home() {
               </Card>
             </Link>
           )}
+
+          {/* 横長: 左カラムに参考動画 */}
+          <div className="hidden lg:block">
+            <ReferenceVideoCard />
+          </div>
         </div>
 
         {/* 右側: レンジテーブルと色・星の対応 */}
@@ -106,41 +170,13 @@ export default async function Home() {
         </div>
       </div>
 
-      {/* Footer: GitHub & Reference Video */}
-      <div className="w-full space-y-6 mt-12 pb-8">
-        {/* GitHub Link */}
-        <div className="flex justify-center">
-          <Link
-            href="https://github.com/yutar0xff/yokosawa-rangetable-training"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-          >
-            <Github className="w-6 h-6" />
-            <span className="text-sm font-medium">GitHubリポジトリ</span>
-          </Link>
-        </div>
-
-        {/* Reference Video */}
+      {/* 縦長のみ: 参考動画＋その下に GitHub/X アイコン */}
+      <div className="w-full space-y-6 mt-12 pb-8 lg:hidden">
         <div className="w-full max-w-4xl mx-auto">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg text-center">参考動画</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="aspect-video w-full">
-                <iframe
-                  width="100%"
-                  height="100%"
-                  src="https://www.youtube.com/embed/NDouTGvor-k"
-                  title="参考動画"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                  className="rounded-lg"
-                />
-              </div>
-            </CardContent>
-          </Card>
+          <ReferenceVideoCard />
+        </div>
+        <div className="flex justify-center gap-4">
+          <SocialIcons />
         </div>
       </div>
     </div>

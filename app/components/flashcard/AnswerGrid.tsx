@@ -10,7 +10,7 @@ interface AnswerGridProps {
 
 export function AnswerGrid({ onAnswer }: AnswerGridProps) {
   return (
-    <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2">
+    <div className="w-full max-w-full grid grid-cols-3 gap-2 lg:gap-3">
       {Object.entries(STAR_TO_RANGE)
         .reverse()
         .map(([starStr, category]) => {
@@ -20,7 +20,7 @@ export function AnswerGrid({ onAnswer }: AnswerGridProps) {
               key={category}
               onClick={() => onAnswer(category)}
               className={cn(
-                "h-16 sm:h-20 flex flex-col items-center justify-center gap-1",
+                "h-16 sm:h-20 lg:h-24 flex flex-col items-center justify-center gap-1 min-w-0",
                 RANGE_COLORS[category],
                 "hover:opacity-90 transition-opacity",
               )}

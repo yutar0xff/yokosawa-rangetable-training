@@ -24,9 +24,10 @@ export const VALID_RANKS: string[] = Object.keys(RANK_ORDER);
 // フラッシュカードモード
 export const QUESTIONS_PER_SET = 10;
 
-// カードサイズ
+// カードサイズ（横長レイアウト用に MEDIUM を追加）
 export const CARD_SIZES = {
   SMALL: { width: 60, height: 84 },
+  MEDIUM: { width: 120, height: 168 },
   LARGE: { width: 180, height: 252 },
 } as const;
 

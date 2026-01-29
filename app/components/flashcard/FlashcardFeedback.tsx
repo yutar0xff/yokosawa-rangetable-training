@@ -25,11 +25,11 @@ export function FlashcardFeedback({
   onNext,
 }: FlashcardFeedbackProps) {
   return (
-    <div className="space-y-3 w-full">
-      <div className="flex flex-col lg:flex-row gap-3 items-start lg:items-start">
+    <div className="flex flex-col flex-1 min-h-0 w-full gap-3">
+      <div className="flex flex-col lg:flex-row gap-3 items-start lg:items-stretch flex-1 min-h-0 lg:overflow-hidden">
         {/* 左側: カードと選択・正解情報 */}
-        <Card className="flex-1 w-full lg:max-w-xs">
-          <CardContent className="flex flex-col items-center py-3 px-4">
+        <Card className="flex-1 w-full lg:max-w-xs lg:min-h-0 flex flex-col">
+          <CardContent className="flex flex-col items-center py-3 px-4 shrink-0">
             <div className="flex gap-2 mb-2">
               <PokerCard
                 card={cards[0]}
@@ -49,7 +49,6 @@ export function FlashcardFeedback({
                 <X className="w-4 h-4" /> 不正解
               </div>
 
-              {/* ユーザーの選択と正解を横並びで表示 */}
               <div className="flex flex-row gap-3 w-full justify-center">
                 <div className="flex flex-col gap-1 items-center">
                   <span className="text-xs text-gray-500 font-medium">
@@ -74,12 +73,12 @@ export function FlashcardFeedback({
           </CardContent>
         </Card>
 
-        {/* 右側: レンジテーブル */}
-        <Card className="flex-1 w-full lg:flex-[2] overflow-hidden">
-          <CardHeader className="py-2 px-3">
+        {/* 右側: レンジテーブル（横長でスクロール可能） */}
+        <Card className="flex-1 w-full lg:flex-2 flex flex-col min-h-0 overflow-hidden">
+          <CardHeader className="py-2 px-3 shrink-0">
             <CardTitle className="text-sm">レンジテーブル</CardTitle>
           </CardHeader>
-          <CardContent className="p-1 sm:p-2">
+          <CardContent className="p-1 sm:p-2 flex-1 min-h-0 overflow-auto">
             <div className="w-full overflow-x-auto">
               <div className="flex justify-center min-w-fit">
                 <RangeGrid
@@ -95,7 +94,7 @@ export function FlashcardFeedback({
         </Card>
       </div>
 
-      <Button onClick={onNext} className="w-full" size="default">
+      <Button onClick={onNext} className="w-full shrink-0" size="default">
         次へ
       </Button>
     </div>

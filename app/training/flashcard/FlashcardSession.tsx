@@ -17,6 +17,7 @@ import {
 } from "@/app/data/types";
 import { useRangeStats } from "@/app/hooks/useRangeStats";
 import { useAutoAdvance } from "@/app/hooks/useAutoAdvance";
+import { useMediaQuery } from "@/app/hooks/useMediaQuery";
 import { handToCards } from "@/app/utils/handParser";
 import { generateHandWithRandomSuits } from "@/app/utils/handNormalizer";
 import { HomeButton } from "@/app/components/common/HomeButton";
@@ -38,6 +39,7 @@ export default function FlashcardSession({
   mode,
 }: FlashcardSessionProps) {
   const { recordResult, getWeakHands, isLoaded } = useRangeStats();
+  const isLg = useMediaQuery("(min-width: 1024px)");
 
   const [queue, setQueue] = useState<Question[]>([]);
   const [mistakes, setMistakes] = useState<Question[]>([]);
@@ -208,8 +210,8 @@ export default function FlashcardSession({
     );
   } else {
     content = (
-      <div className="container max-w-7xl mx-auto p-2 sm:p-4 space-y-1 sm:space-y-2 flex flex-col min-h-screen">
-        <div className="flex justify-between items-center pb-0.5 sm:pb-1">
+      <div className="container max-w-[1600px] mx-auto p-2 sm:p-4 flex flex-col min-h-dvh overflow-hidden w-full">
+        <div className="shrink-0 flex justify-between items-center pb-0.5 sm:pb-1">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
             {isRetryMode ? "リトライ" : "単語帳モード"}
           </h1>
@@ -222,27 +224,30 @@ export default function FlashcardSession({
         </div>
         <Progress
           value={(currentIndex / queue.length) * 100}
-          className="mb-0.5 sm:mb-1"
+          className="shrink-0 mb-0.5 sm:mb-1"
         />
 
         {gameState === "feedback" ? (
-          <FlashcardFeedback
-            question={currentQuestion}
-            selectedAnswer={selectedAnswer}
-            ranges={ranges}
-            cards={cards}
-            onNext={nextQuestion}
-          />
+          <div className="flex-1 min-h-0 flex flex-col lg:overflow-hidden">
+            <FlashcardFeedback
+              question={currentQuestion}
+              selectedAnswer={selectedAnswer}
+              ranges={ranges}
+              cards={cards}
+              onNext={nextQuestion}
+            />
+          </div>
         ) : (
-          <div className="flex flex-col flex-1 min-h-0">
-            <div className="flex-1 flex items-center justify-center">
+          <div className="flex-1 min-h-0 flex flex-col lg:grid lg:grid-cols-2 lg:gap-6 lg:overflow-hidden w-full">
+            <div className="flex-1 flex flex-col min-h-0 w-full lg:flex lg:items-center lg:justify-center">
               <HandDisplay
                 hand={currentQuestion.hand}
                 cards={cards}
                 showCorrectEffect={showCorrectEffect}
+                size={isLg ? "MEDIUM" : "LARGE"}
               />
             </div>
-            <div className="mt-auto">
+            <div className="mt-auto w-full lg:mt-0 lg:flex lg:items-center lg:justify-center lg:min-h-0">
               <AnswerGrid onAnswer={handleAnswer} />
             </div>
           </div>

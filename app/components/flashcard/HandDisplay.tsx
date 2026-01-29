@@ -5,30 +5,28 @@ import { PokerCard } from "@/app/components/PokerCard";
 import { CARD_SIZES } from "@/app/data/constants";
 import { Circle } from "lucide-react";
 
+type CardSizeKey = keyof typeof CARD_SIZES;
+
 interface HandDisplayProps {
   hand: string;
   cards: [string, string];
   showCorrectEffect: boolean;
+  /** 横長レイアウトで画面に収める場合は "MEDIUM" */
+  size?: CardSizeKey;
 }
 
 export function HandDisplay({
   hand,
   cards,
   showCorrectEffect,
+  size = "LARGE",
 }: HandDisplayProps) {
+  const { width, height } = CARD_SIZES[size];
   return (
-    <Card className="flex flex-col justify-center items-center py-1 sm:py-3 relative">
+    <Card className="w-full flex flex-col justify-center items-center py-1 sm:py-3 relative">
       <div className="flex gap-2 sm:gap-6 mb-1 sm:mb-3 px-2 sm:px-6">
-        <PokerCard
-          card={cards[0]}
-          width={CARD_SIZES.LARGE.width}
-          height={CARD_SIZES.LARGE.height}
-        />
-        <PokerCard
-          card={cards[1]}
-          width={CARD_SIZES.LARGE.width}
-          height={CARD_SIZES.LARGE.height}
-        />
+        <PokerCard card={cards[0]} width={width} height={height} />
+        <PokerCard card={cards[1]} width={width} height={height} />
       </div>
       <h2 className="text-2xl sm:text-4xl font-bold mb-0.5 sm:mb-1">{hand}</h2>
 
