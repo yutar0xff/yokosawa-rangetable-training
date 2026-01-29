@@ -1,3 +1,5 @@
+import { VALID_RANKS } from "@/app/data/constants";
+
 /**
  * ハンド文字列をカード配列に変換する
  * @param hand - ハンド文字列（例: "AA", "AKs", "T9o"）
@@ -15,22 +17,7 @@ export function parseHandToCards(hand: string): [string, string] {
   const type = hand.length > 2 ? hand[2] : ""; // 's' or 'o' or empty (pair)
 
   // ランクの検証
-  const validRanks = [
-    "A",
-    "K",
-    "Q",
-    "J",
-    "T",
-    "9",
-    "8",
-    "7",
-    "6",
-    "5",
-    "4",
-    "3",
-    "2",
-  ];
-  if (!validRanks.includes(rank1) || !validRanks.includes(rank2)) {
+  if (!VALID_RANKS.includes(rank1) || !VALID_RANKS.includes(rank2)) {
     throw new Error(`Invalid rank in hand: ${hand}`);
   }
 
@@ -58,4 +45,30 @@ export function parseHandToCards(hand: string): [string, string] {
   }
 
   return [`${rank1}${s1}`, `${rank2}${s2}`];
+}
+
+const DEFAULT_CARDS: [string, string] = ["As", "Ah"];
+
+/**
+ * 任意のハンド文字列をカード配列に変換する
+ * 4文字（AsKs）、2文字（AA）、3文字（AKs）のいずれにも対応
+ * @param hand - ハンド文字列
+ * @returns カードのタプル [card1, card2]。無効な場合はデフォルト値を返す
+ */
+export function handToCards(hand: string): [string, string] {
+  if (!hand || hand.length < 2) {
+    return DEFAULT_CARDS;
+  }
+  const h = hand.trim();
+  try {
+    if (h.length === 4) {
+      return [h.slice(0, 2), h.slice(2, 4)] as [string, string];
+    }
+    if (h.length === 2) {
+      return [h[0] + "s", h[1] + "h"] as [string, string];
+    }
+    return parseHandToCards(h);
+  } catch {
+    return DEFAULT_CARDS;
+  }
 }

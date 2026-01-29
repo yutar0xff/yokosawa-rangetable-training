@@ -1,6 +1,12 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  type ReactNode,
+} from "react";
 import { Progress } from "@/components/ui/progress";
 import {
   RangeTable,
@@ -10,10 +16,11 @@ import {
   FlashcardMode,
 } from "@/app/data/types";
 import { useRangeStats } from "@/app/hooks/useRangeStats";
-import { parseHandToCards } from "@/app/utils/handParser";
+import { useAutoAdvance } from "@/app/hooks/useAutoAdvance";
+import { handToCards } from "@/app/utils/handParser";
 import { generateHandWithRandomSuits } from "@/app/utils/handNormalizer";
 import { HomeButton } from "@/app/components/common/HomeButton";
-import { QUESTIONS_PER_SET, FEEDBACK_DELAY_MS } from "@/app/data/constants";
+import { QUESTIONS_PER_SET } from "@/app/data/constants";
 import { pickRandomMultiple } from "@/app/utils/randomUtils";
 import { FlashcardFinished } from "@/app/components/flashcard/FlashcardFinished";
 import { FlashcardFeedback } from "@/app/components/flashcard/FlashcardFeedback";
@@ -45,49 +52,44 @@ export default function FlashcardSession({
     useState(QUESTIONS_PER_SET);
   const [snackbarMessage, setSnackbarMessage] = useState<string | null>(null);
 
-  const startNewSet = useCallback(() => {
-    if (mode === "weak") {
-      const weakHands = getWeakHands(QUESTIONS_PER_SET);
-      if (weakHands.length === 0) {
-        setSnackbarMessage(
-          "苦手問題がありませんでした、ランダムな問題を出題します",
-        );
-        // ランダム出題にフォールバック（下記のランダムロジックへ続く）
-      } else {
-        const newQueue: Question[] = weakHands
-          .map((normalizedHand) => {
-            const correctRange = ranges[normalizedHand];
-            if (!correctRange) {
-              console.warn(`No range found for hand: ${normalizedHand}`);
-              return null;
-            }
-            const displayHand = generateHandWithRandomSuits(normalizedHand);
-            return { hand: displayHand, correctRange };
-          })
-          .filter((q): q is Question => q !== null);
+  const resetSessionWithQueue = useCallback(
+    (newQueue: Question[], totalCount: number) => {
+      setQueue(newQueue);
+      setMistakes([]);
+      setCurrentIndex(0);
+      setGameState("playing");
+      setIsRetryMode(false);
+      setTotalQuestionsInSet(totalCount);
+    },
+    [],
+  );
 
-        if (newQueue.length === 0) {
-          console.error("No valid questions generated for weak mode");
-          return;
+  const buildWeakQueue = useCallback((): Question[] => {
+    const weakHands = getWeakHands(QUESTIONS_PER_SET);
+    if (weakHands.length === 0) {
+      setSnackbarMessage(
+        "苦手問題がありませんでした、ランダムな問題を出題します",
+      );
+      return [];
+    }
+    return weakHands
+      .map((normalizedHand) => {
+        const correctRange = ranges[normalizedHand];
+        if (!correctRange) {
+          console.warn(`No range found for hand: ${normalizedHand}`);
+          return null;
         }
+        const displayHand = generateHandWithRandomSuits(normalizedHand);
+        return { hand: displayHand, correctRange };
+      })
+      .filter((q): q is Question => q !== null);
+  }, [ranges, getWeakHands]);
 
-        setQueue(newQueue);
-        setMistakes([]);
-        setCurrentIndex(0);
-        setGameState("playing");
-        setIsRetryMode(false);
-        setTotalQuestionsInSet(newQueue.length);
-        return;
-      }
-    }
-
+  const buildRandomQueue = useCallback((): Question[] => {
     const hands = Object.keys(ranges);
-    if (hands.length === 0) {
-      console.error("No hands available in ranges");
-      return;
-    }
+    if (hands.length === 0) return [];
     const randomHands = pickRandomMultiple(hands, QUESTIONS_PER_SET);
-    const newQueue: Question[] = randomHands
+    return randomHands
       .map((hand) => {
         const correctRange = ranges[hand];
         if (!correctRange) {
@@ -97,19 +99,22 @@ export default function FlashcardSession({
         return { hand, correctRange };
       })
       .filter((q): q is Question => q !== null);
+  }, [ranges]);
 
+  const startNewSet = useCallback(() => {
+    let newQueue: Question[];
+    if (mode === "weak") {
+      const weakQueue = buildWeakQueue();
+      newQueue = weakQueue.length > 0 ? weakQueue : buildRandomQueue();
+    } else {
+      newQueue = buildRandomQueue();
+    }
     if (newQueue.length === 0) {
       console.error("No valid questions generated");
       return;
     }
-
-    setQueue(newQueue);
-    setMistakes([]);
-    setCurrentIndex(0);
-    setGameState("playing");
-    setIsRetryMode(false);
-    setTotalQuestionsInSet(QUESTIONS_PER_SET);
-  }, [ranges, mode, getWeakHands]);
+    resetSessionWithQueue(newQueue, newQueue.length);
+  }, [mode, buildWeakQueue, buildRandomQueue, resetSessionWithQueue]);
 
   // セッション初期化。苦手モードの場合は localStorage 読み込み完了（isLoaded）まで待つ
   useEffect(() => {
@@ -144,6 +149,14 @@ export default function FlashcardSession({
     }
   }, [currentIndex, queue.length]);
 
+  const [justCorrect, setJustCorrect] = useState(false);
+  const handleAutoAdvance = useCallback(() => {
+    setShowCorrectEffect(false);
+    setJustCorrect(false);
+    nextQuestion();
+  }, [nextQuestion]);
+  useAutoAdvance(justCorrect, handleAutoAdvance, justCorrect);
+
   const handleAnswer = useCallback(
     (answer: RangeCategory) => {
       if (gameState !== "playing" || !currentQuestion) return;
@@ -156,43 +169,25 @@ export default function FlashcardSession({
 
       if (isCorrect) {
         setShowCorrectEffect(true);
-        // 正解時は自動で次へ
-        setTimeout(() => {
-          setShowCorrectEffect(false);
-          nextQuestion();
-        }, FEEDBACK_DELAY_MS);
+        setJustCorrect(true);
       } else {
         setGameState("feedback");
         setMistakes((prev) => [...prev, currentQuestion]);
       }
     },
-    [gameState, currentQuestion, recordResult, nextQuestion],
+    [gameState, currentQuestion, recordResult],
   );
 
   // すべてのフックは早期リターンの前に呼ばれる必要がある
   const cards: [string, string] = useMemo(() => {
-    if (!currentQuestion) {
-      return ["As", "Ah"] as [string, string]; // デフォルト値
-    }
-    const hand = currentQuestion.hand;
-    try {
-      // 4文字: スート付きハンド (例: AsKs, 2D3S)
-      if (hand.length === 4) {
-        return [hand.slice(0, 2), hand.slice(2, 4)] as [string, string];
-      }
-      if (hand.length === 2) {
-        return [hand[0] + "s", hand[1] + "h"] as [string, string];
-      }
-      return parseHandToCards(hand);
-    } catch (error) {
-      console.error("Failed to parse hand to cards:", error);
-      return ["As", "Ah"] as [string, string]; // フォールバック
-    }
+    if (!currentQuestion) return handToCards("AA");
+    return handToCards(currentQuestion.hand);
   }, [currentQuestion]);
 
-  // 早期リターンはすべてのフックの後に配置
+  // 早期リターンはすべてのフックの後に配置。表示内容を content に分岐し、Snackbar は1箇所でレンダー
+  let content: ReactNode;
   if (!currentQuestion && gameState !== "finished") {
-    return (
+    content = (
       <div className="container max-w-7xl mx-auto p-4 flex items-center justify-center min-h-screen">
         {mode === "weak" && !isLoaded ? (
           <p className="text-gray-500">学習データを読み込んでいます...</p>
@@ -201,33 +196,19 @@ export default function FlashcardSession({
         )}
       </div>
     );
-  }
-
-  // Render Finished State
-  if (gameState === "finished") {
-    return (
-      <>
-        <FlashcardFinished
-          mistakes={mistakes}
-          totalQuestionsInSet={totalQuestionsInSet}
-          isRetryMode={isRetryMode}
-          onRetry={startRetry}
-          onNextSet={startNewSet}
-        />
-        {snackbarMessage && (
-          <Snackbar
-            message={snackbarMessage}
-            onClose={() => setSnackbarMessage(null)}
-          />
-        )}
-      </>
+  } else if (gameState === "finished") {
+    content = (
+      <FlashcardFinished
+        mistakes={mistakes}
+        totalQuestionsInSet={totalQuestionsInSet}
+        isRetryMode={isRetryMode}
+        onRetry={startRetry}
+        onNextSet={startNewSet}
+      />
     );
-  }
-
-  return (
-    <>
+  } else {
+    content = (
       <div className="container max-w-7xl mx-auto p-2 sm:p-4 space-y-1 sm:space-y-2 flex flex-col min-h-screen">
-        {/* Header with Home button */}
         <div className="flex justify-between items-center pb-0.5 sm:pb-1">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
             {isRetryMode ? "リトライ" : "単語帳モード"}
@@ -254,7 +235,6 @@ export default function FlashcardSession({
           />
         ) : (
           <div className="flex flex-col flex-1 min-h-0">
-            {/* トランプ表示を中央に配置するラッパー */}
             <div className="flex-1 flex items-center justify-center">
               <HandDisplay
                 hand={currentQuestion.hand}
@@ -262,13 +242,18 @@ export default function FlashcardSession({
                 showCorrectEffect={showCorrectEffect}
               />
             </div>
-            {/* ボタンを下に配置 */}
             <div className="mt-auto">
               <AnswerGrid onAnswer={handleAnswer} />
             </div>
           </div>
         )}
       </div>
+    );
+  }
+
+  return (
+    <>
+      {content}
       {snackbarMessage && (
         <Snackbar
           message={snackbarMessage}

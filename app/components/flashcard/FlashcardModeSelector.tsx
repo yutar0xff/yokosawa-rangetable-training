@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRangeStats } from "@/app/hooks/useRangeStats";
+import { useMounted } from "@/app/hooks/useMounted";
 import type { FlashcardMode } from "@/app/data/types";
+import { QUESTIONS_PER_SET } from "@/app/data/constants";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Shuffle, Target, X } from "lucide-react";
@@ -20,13 +21,9 @@ export function FlashcardModeSelector({
   onSelect,
 }: FlashcardModeSelectorProps) {
   const { getWeakHands, isLoaded } = useRangeStats();
-  const weakHands = isLoaded ? getWeakHands(10) : [];
+  const weakHands = isLoaded ? getWeakHands(QUESTIONS_PER_SET) : [];
   const weakAvailable = weakHands.length > 0;
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useMounted();
 
   if (!open) return null;
 
