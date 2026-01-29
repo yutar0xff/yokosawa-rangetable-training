@@ -82,7 +82,7 @@ export default async function Home() {
             Yokosawa RangeTable Training
           </h1>
           <p className="text-gray-500">
-            プリフロップレンジを効率的に暗記しよう
+            プリフロップレンジを効率的に暗記しよう（非公式）
           </p>
         </div>
         <div className="hidden lg:flex">
