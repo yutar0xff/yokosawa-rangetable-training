@@ -7,6 +7,12 @@ settings:
 importers:
   .:
     dependencies:
+      "@next/third-parties":
+        specifier: ^16.1.6
+        version: 16.1.6(next@16.1.6(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)
+      "@vercel/analytics":
+        specifier: ^1.6.1
+        version: 1.6.1(next@16.1.6(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -630,6 +636,15 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  "@next/third-parties@16.1.6":
+    resolution:
+      {
+        integrity: sha512-/cLY1egaH529ylSMSK+C8dA3nWDLL4hOFR4fca9OLWWxjcNwzsbuq2pPb/tmdWL9Zj3K1nTjd1pWQoSlaDQ0VA==,
+      }
+    peerDependencies:
+      next: ^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0-beta.0
+      react: ^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0
+
   "@nodelib/fs.scandir@2.1.5":
     resolution:
       {
@@ -1087,6 +1102,35 @@ packages:
       }
     cpu: [x64]
     os: [win32]
+
+  "@vercel/analytics@1.6.1":
+    resolution:
+      {
+        integrity: sha512-oH9He/bEM+6oKlv3chWuOOcp8Y6fo6/PSro8hEkgCW3pu9/OiCXiUpRUogDh3Fs3LH2sosDrx8CxeOLBEE+afg==,
+      }
+    peerDependencies:
+      "@remix-run/react": ^2
+      "@sveltejs/kit": ^1 || ^2
+      next: ">= 13"
+      react: ^18 || ^19 || ^19.0.0-rc
+      svelte: ">= 4"
+      vue: ^3
+      vue-router: ^4
+    peerDependenciesMeta:
+      "@remix-run/react":
+        optional: true
+      "@sveltejs/kit":
+        optional: true
+      next:
+        optional: true
+      react:
+        optional: true
+      svelte:
+        optional: true
+      vue:
+        optional: true
+      vue-router:
+        optional: true
 
   acorn-jsx@5.3.2:
     resolution:
@@ -3086,6 +3130,12 @@ packages:
       }
     engines: { node: ">=6" }
 
+  third-party-capital@1.0.20:
+    resolution:
+      {
+        integrity: sha512-oB7yIimd8SuGptespDAZnNkzIz+NWaJCu2RMsbs4Wmp9zSDUM8Nhi3s2OOcqYuv3mN4hitXc8DVx+LyUmbUDiA==,
+      }
+
   tinyglobby@0.2.15:
     resolution:
       {
@@ -3614,6 +3664,12 @@ snapshots:
   "@next/swc-win32-x64-msvc@16.1.6":
     optional: true
 
+  "@next/third-parties@16.1.6(next@16.1.6(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)":
+    dependencies:
+      next: 16.1.6(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react: 19.2.3
+      third-party-capital: 1.0.20
+
   "@nodelib/fs.scandir@2.1.5":
     dependencies:
       "@nodelib/fs.stat": 2.0.5
@@ -3875,6 +3931,11 @@ snapshots:
 
   "@unrs/resolver-binding-win32-x64-msvc@1.11.1":
     optional: true
+
+  "@vercel/analytics@1.6.1(next@16.1.6(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)":
+    optionalDependencies:
+      next: 16.1.6(@babel/core@7.28.6)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react: 19.2.3
 
   acorn-jsx@5.3.2(acorn@8.15.0):
     dependencies:
@@ -5232,6 +5293,8 @@ snapshots:
   tailwindcss@4.1.18: {}
 
   tapable@2.3.0: {}
+
+  third-party-capital@1.0.20: {}
 
   tinyglobby@0.2.15:
     dependencies:
