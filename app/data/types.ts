@@ -62,3 +62,6 @@ export interface Question {
   hand: string;
   correctRange: RangeCategory;
 }
+
+// フラッシュカードモードの型定義
+export type FlashcardMode = "random" | "weak";

@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Brain, Grid3X3, Swords, Github } from "lucide-react";
+import { Grid3X3, Swords, Github } from "lucide-react";
 import { RangeGrid } from "@/app/components/RangeGrid";
 import { RangeLegend } from "@/app/components/common/RangeLegend";
 import { loadRanges } from "@/app/utils/loadRanges";
+import { FlashcardCardWithModal } from "@/app/components/flashcard/FlashcardCardWithModal";
 
 export default async function Home() {
   const ranges = await loadRanges();
@@ -23,19 +23,7 @@ export default async function Home() {
         {/* 左側: モード選択 */}
         <div className="space-y-4">
           {/* Flashcard Mode */}
-          <Link href="/training/flashcard" className="block">
-            <Card className="hover:border-black transition-colors cursor-pointer">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-xl">単語帳モード</CardTitle>
-                <Brain className="w-6 h-6 text-blue-500" />
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-gray-500">
-                  ハンドを見て、その強さ（色・星）を即座に答えるトレーニング。
-                </p>
-              </CardContent>
-            </Card>
-          </Link>
+          <FlashcardCardWithModal />
 
           {/* Grid Fill Mode */}
           <Link href="/training/grid" className="block">

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { HandStat } from "../data/types";
+import { normalizeHand } from "../utils/handNormalizer";
 
 const STORAGE_KEY = "yokosawa-training-stats";
 
@@ -29,9 +30,10 @@ export function useRangeStats() {
   }, [stats, isLoaded]);
 
   const recordResult = useCallback((hand: string, isCorrect: boolean) => {
+    const key = normalizeHand(hand);
     setStats((prev) => {
-      const current = prev[hand] || {
-        hand,
+      const current = prev[key] || {
+        hand: key,
         correctCount: 0,
         totalCount: 0,
         lastReviewed: 0,
@@ -48,14 +50,28 @@ export function useRangeStats() {
 
       return {
         ...prev,
-        [hand]: updated,
+        [key]: updated,
       };
     });
   }, []);
 
   const getStat = useCallback(
     (hand: string): HandStat | undefined => {
-      return stats[hand];
+      return stats[normalizeHand(hand)];
+    },
+    [stats],
+  );
+
+  const getWeakHands = useCallback(
+    (limit: number = 10): string[] => {
+      const entries = Object.entries(stats).filter(([, s]) => s.totalCount > 0);
+      const sorted = entries
+        .map(([hand, s]) => ({
+          hand,
+          accuracy: s.correctCount / s.totalCount,
+        }))
+        .sort((a, b) => a.accuracy - b.accuracy);
+      return sorted.slice(0, limit).map((x) => x.hand);
     },
     [stats],
   );
@@ -72,6 +88,7 @@ export function useRangeStats() {
     isLoaded,
     recordResult,
     getStat,
+    getWeakHands,
     resetStats,
   };
 }
