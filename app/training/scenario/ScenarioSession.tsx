@@ -7,6 +7,7 @@ import { PokerCard } from "@/app/components/PokerCard";
 import { RangeTable } from "@/app/data/types";
 import { SCENARIO_RULES, checkAction, GameType } from "@/app/data/rules";
 import { parseHandToCards } from "@/app/utils/handParser";
+import { normalizeHand } from "@/app/utils/handNormalizer";
 import { HomeButton } from "@/app/components/common/HomeButton";
 import { CARD_SIZES } from "@/app/data/constants";
 import { pickRandom } from "@/app/utils/randomUtils";
@@ -160,7 +161,7 @@ export default function ScenarioSession({ ranges }: ScenarioSessionProps) {
               height={CARD_SIZES.LARGE.height}
             />
           </div>
-          <h2 className="text-4xl font-bold">{question.hand}</h2>
+          <h2 className="text-4xl font-bold">{normalizeHand(question.hand)}</h2>
         </Card>
 
         {/* Actions */}

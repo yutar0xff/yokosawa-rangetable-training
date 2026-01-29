@@ -3,6 +3,7 @@
 import { Card } from "@/components/ui/card";
 import { PokerCard } from "@/app/components/PokerCard";
 import { CARD_SIZES } from "@/app/data/constants";
+import { normalizeHand } from "@/app/utils/handNormalizer";
 import { Circle } from "lucide-react";
 
 type CardSizeKey = keyof typeof CARD_SIZES;
@@ -13,6 +14,8 @@ interface HandDisplayProps {
   showCorrectEffect: boolean;
   /** 横長レイアウトで画面に収める場合は "MEDIUM" */
   size?: CardSizeKey;
+  /** カード下のハンド表記（KQs など）を表示するか。単語帳出題時は false */
+  showHandLabel?: boolean;
 }
 
 export function HandDisplay({
@@ -20,6 +23,7 @@ export function HandDisplay({
   cards,
   showCorrectEffect,
   size = "LARGE",
+  showHandLabel = true,
 }: HandDisplayProps) {
   const { width, height } = CARD_SIZES[size];
   return (
@@ -28,7 +32,11 @@ export function HandDisplay({
         <PokerCard card={cards[0]} width={width} height={height} />
         <PokerCard card={cards[1]} width={width} height={height} />
       </div>
-      <h2 className="text-2xl sm:text-4xl font-bold mb-0.5 sm:mb-1">{hand}</h2>
+      {showHandLabel && (
+        <h2 className="text-2xl sm:text-4xl font-bold mb-0.5 sm:mb-1">
+          {normalizeHand(hand)}
+        </h2>
+      )}
 
       {showCorrectEffect && (
         <div className="absolute inset-0 flex items-center justify-center bg-green-50/80 backdrop-blur-sm z-20 rounded-xl animate-in fade-in zoom-in duration-300">

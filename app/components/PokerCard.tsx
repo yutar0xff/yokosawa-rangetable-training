@@ -1,22 +1,13 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils"; // Assuming shadcn setup has this, or I'll implement a simple one if missing.
 
-// Helper to resolve SVG filename
+// Helper to resolve SVG filename (rank + suit lowercase: As.svg, Tc.svg, Kd.svg)
 const getCardSvgName = (card: string) => {
   // card format: "Ah", "Td", "2s" (Rank + Suit)
   if (card.length < 2) return null;
-
-  const rankChar = card[0].toUpperCase();
-  const suitChar = card[1].toUpperCase();
-
-  let rankName = rankChar;
-  if (rankChar === "A") rankName = "ace";
-  else if (rankChar === "K") rankName = "K";
-  else if (rankChar === "Q") rankName = "Q";
-  else if (rankChar === "J") rankName = "jack";
-  else if (rankChar === "T") rankName = "10";
-
-  return `${rankName}${suitChar}.svg`;
+  const rank = card[0].toUpperCase();
+  const suit = card[1].toLowerCase();
+  return `${rank}${suit}.svg`;
 };
 
 interface PokerCardProps {

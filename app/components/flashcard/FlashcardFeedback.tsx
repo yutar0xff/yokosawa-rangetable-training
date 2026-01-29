@@ -7,6 +7,7 @@ import { RangeGrid } from "@/app/components/RangeGrid";
 import { RangeBadge } from "@/app/components/RangeBadge";
 import { RangeTable, RangeCategory, Question } from "@/app/data/types";
 import { CARD_SIZES } from "@/app/data/constants";
+import { normalizeHand } from "@/app/utils/handNormalizer";
 import { X } from "lucide-react";
 
 interface FlashcardFeedbackProps {
@@ -45,7 +46,9 @@ export function FlashcardFeedback({
                 height={CARD_SIZES.SMALL.height}
               />
             </div>
-            <h2 className="text-lg font-bold mb-2">{question.hand}</h2>
+            <h2 className="text-lg font-bold mb-2">
+              {normalizeHand(question.hand)}
+            </h2>
 
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-300 flex flex-col items-center gap-3 w-full">
               <div className="flex items-center gap-1 text-red-500 font-bold text-sm">
@@ -86,7 +89,7 @@ export function FlashcardFeedback({
               <div className="flex justify-center min-w-fit">
                 <RangeGrid
                   ranges={ranges}
-                  highlightHand={question.hand}
+                  highlightHand={normalizeHand(question.hand)}
                   userAnswer={selectedAnswer || undefined}
                   correctAnswer={question.correctRange}
                   showLabels={true}

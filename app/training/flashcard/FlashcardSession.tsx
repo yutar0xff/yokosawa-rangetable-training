@@ -245,6 +245,7 @@ export default function FlashcardSession({
                 cards={cards}
                 showCorrectEffect={showCorrectEffect}
                 size={isLg ? "MEDIUM" : "LARGE"}
+                showHandLabel={false}
               />
             </div>
             <div className="mt-auto w-full lg:mt-0 lg:flex lg:items-center lg:justify-center lg:min-h-0">
