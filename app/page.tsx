@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Grid3X3, Swords, Github, Twitter } from "lucide-react";
+import { Grid3X3, Swords, Github } from "lucide-react";
 import { RangeGrid } from "@/app/components/RangeGrid";
 import { RangeLegend } from "@/app/components/common/RangeLegend";
 import { loadRanges } from "@/app/utils/loadRanges";
@@ -9,6 +9,18 @@ import { FlashcardCardWithModal } from "@/app/components/flashcard/FlashcardCard
 
 const GITHUB_URL = "https://github.com/yutar0xff/yokosawa-rangetable-training";
 const X_URL = "https://x.com/yutar0xff";
+
+/** X（旧Twitter）の最新ロゴ */
+function XLogo({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden>
+      <path
+        d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}
 
 function SocialIcons({ className }: { className?: string }) {
   return (
@@ -29,7 +41,7 @@ function SocialIcons({ className }: { className?: string }) {
         className="text-gray-600 hover:text-gray-900 transition-colors"
         aria-label="作者のX"
       >
-        <Twitter className="w-6 h-6" />
+        <XLogo className="w-5 h-5" />
       </Link>
     </div>
   );
