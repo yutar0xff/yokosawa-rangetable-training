@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { BASE_PATH } from "@/lib/basePath";
 import { cn } from "@/lib/utils"; // Assuming shadcn setup has this, or I'll implement a simple one if missing.
 
 // Helper to resolve SVG filename (rank + suit lowercase: As.svg, Tc.svg, Kd.svg)
@@ -39,7 +40,7 @@ export function PokerCard({
       style={{ width, height }}
     >
       <Image
-        src={`/imgs/cards/${fileName}`}
+        src={`${BASE_PATH}/imgs/cards/${fileName}`}
         alt={card}
         fill
         className="object-contain"

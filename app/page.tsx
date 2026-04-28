@@ -111,42 +111,26 @@ export default async function Home() {
             </Card>
           </Link>
 
-          {/* Scenario Mode */}
-          {process.env.NODE_ENV === "production" ? (
-            <div className="block">
-              <Card className="opacity-50 cursor-not-allowed relative">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-xl">シナリオモード</CardTitle>
-                  <Swords className="w-6 h-6 text-gray-400" />
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-400">
-                    状況（人数）に応じて、参加するか降りるかを実践的に判断。
-                  </p>
-                  <Badge
-                    variant="outline"
-                    className="mt-2 bg-gray-200 text-gray-600 border-gray-300"
-                  >
-                    Coming Soon
-                  </Badge>
-                </CardContent>
-              </Card>
-            </div>
-          ) : (
-            <Link href="/training/scenario" className="block">
-              <Card className="hover:border-black transition-colors cursor-pointer">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-xl">シナリオモード</CardTitle>
-                  <Swords className="w-6 h-6 text-red-500" />
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-500">
-                    状況（人数）に応じて、参加するか降りるかを実践的に判断。
-                  </p>
-                </CardContent>
-              </Card>
-            </Link>
-          )}
+          {/* Scenario Mode — Coming Soon（全環境で同じ表示） */}
+          <div className="block pointer-events-none select-none">
+            <Card className="opacity-50 cursor-not-allowed relative">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-xl">シナリオモード</CardTitle>
+                <Swords className="w-6 h-6 text-gray-400" />
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-gray-400">
+                  状況（人数）に応じて、参加するか降りるかを実践的に判断。
+                </p>
+                <Badge
+                  variant="outline"
+                  className="mt-2 bg-gray-200 text-gray-600 border-gray-300"
+                >
+                  Coming Soon
+                </Badge>
+              </CardContent>
+            </Card>
+          </div>
 
           {/* 横長: 左カラムに参考動画 */}
           <div className="hidden lg:block">
