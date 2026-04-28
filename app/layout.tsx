@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
+import { BASE_PATH } from "@/lib/basePath";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,6 +18,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Yokosawa RangeTable Training",
   description: "プリフロップレンジを効率的に暗記するためのトレーニングアプリ",
+  metadataBase: new URL("https://yutar0xff.com"),
+  alternates: {
+    canonical: BASE_PATH,
+  },
 };
 
 export default function RootLayout({
