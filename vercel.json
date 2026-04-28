@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/((?!apps/yokosawa-rangetable-training).*)",
+      "destination": "https://yutar0xff.com/apps/yokosawa-rangetable-training",
+      "permanent": true
+    }
+  ]
+}
