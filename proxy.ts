@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { BASE_PATH } from "./lib/basePath";
+import { SITE_URL } from "./lib/basePath";
 
 const ENABLE_CANONICAL_REDIRECT =
   process.env.ENABLE_VERCEL_CANONICAL_REDIRECT === "true";
-const CANONICAL_REDIRECT_URL = process.env.VERCEL_CANONICAL_REDIRECT_URL;
+const CANONICAL_REDIRECT_URL =
+  process.env.VERCEL_CANONICAL_REDIRECT_URL ?? SITE_URL;
 const PROXY_MARKER_HEADER = "x-portfolio-proxy";
 
 function isVercelHost(host: string): boolean {
@@ -24,7 +25,10 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const redirectUrl = new URL(BASE_PATH, CANONICAL_REDIRECT_URL);
+  const redirectUrl = new URL(
+    `${request.nextUrl.pathname}${request.nextUrl.search}`,
+    CANONICAL_REDIRECT_URL,
+  );
   return NextResponse.redirect(redirectUrl, 308);
 }
 
